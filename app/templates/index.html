@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{title}}</title>
+   <link rel="stylesheet" media="screen" href="{{url_for('static', filename='custom.css')}}">
+
+</head>
+
+<body>
+
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    {% if mode == 'root' %}
+    <div class="wrapper fadeInDown">
+      <div id="formContent">
+        <form action="{{url_for('validate')}}">
+          <input type="text" id="Name" class="fadeIn first" name="name" placeholder="Name">
+          <input type="text" id="Favorite Color" class="fadeIn second" name="color" placeholder="Favorite Color">
+          <input type="text" id="Cats or Dogs" class="fadeIn third" name="pet" placeholder="Cats or Dog">
+          <input type="submit" class="fadeIn fourth" value="Submit values">
+        </form>
+      </div>
+    </div>
+    {% elif mode == 'validate' %}
+    <div class="wrapper fadeInDown">
+        <div id="formContent">
+            <h3>Validation Failed</h3>
+            <p>reason: digits not allowed</p>
+            <p>Your input:</p>
+            <p>name:{{name}}, color:{{color}}, pet:{{pet}}</p>
+        </div>
+    </div>
+    {% elif mode == 'validatepet' %}
+    <div class="wrapper fadeInDown">
+        <div id="formContent">
+            <h3>Validation Failed</h3>
+            <p>reason: pet can be only cat or dog</p>
+            <p>Your input: {{pet}}</p>
+        </div>
+    </div>
+    {% elif mode == 'submitted' %}
+    <div class="wrapper fadeInDown">
+        <div id="formContent">
+            <h3>Values successfully submitted</h3>
+        </div>
+    </div>
+    {% endif %}
+
+</body>
+
+</html>
