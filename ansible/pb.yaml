@@ -1,0 +1,19 @@
+---
+
+- name: setup instances
+  hosts: localhost
+  gather_facts: False
+
+  tasks:
+    - include_vars: vars/instance.yaml
+    - import_tasks: create_instance.yaml
+
+- name: deploy app
+  hosts: launched
+  become: yes
+  tasks:
+    - include_vars: vars/provision.yaml
+    - import_tasks: provision.yaml
+
+
+

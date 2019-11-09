@@ -1,0 +1,21 @@
+[Unit]
+Description = Test assignment webapp => https://github.com/ramazeska/ormuco.git
+After = network.target
+
+[Service]
+PermissionsStartOnly = true
+PIDFile = /run/webapp/webapp.pid
+User = ubuntu
+Group = ubuntu
+WorkingDirectory = {{ clone_path }}/app
+ExecStartPre = /bin/mkdir /run/webapp
+ExecStartPre = /bin/chown ubuntu:ubuntu /run/webapp
+EnvironmentFile = /etc/default/webapp.conf
+ExecStart = /usr/bin/env gunicorn --workers {{ num_workers }}  --bind 127.0.0.1:8000 wsgi:app
+ExecReload = /bin/kill -s HUP $MAINPID
+ExecStop = /bin/kill -s TERM $MAINPID
+ExecStopPost = /bin/rm -rf /run/sampleapp
+PrivateTmp = true
+
+[Install]
+WantedBy = multi-user.target
