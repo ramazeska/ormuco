@@ -36,7 +36,9 @@
     ansible-playbook pb.yaml    
 ```
 
+* web service will be created with a self signed certificate for the host and a redirect from 80 to 443
 * please note: each run will create new instance.
+* in order to login to aws instance - use ubuntu user, ami in playbook is ubuntu-18.04 official image
 
 ### Run app locally
 
@@ -45,6 +47,11 @@
 ```bash
     cd ormuco/app
     pip3 install -r pip_req.txt
+```
+3. create mysql db and create user,password and db 
+4. export SQLALCHEMY_DATABASE_URI, example:
+```bash
+export SQLALCHEMY_DATABASE_URI=mysql+mysqlconnector://sqluser:sqlpassword@localhost/dbname
 ```
 3. start local app:
 ```bash
