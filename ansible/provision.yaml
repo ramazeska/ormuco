@@ -1,0 +1,119 @@
+---
+
+- name: add guest key
+  authorized_key:
+    user: ubuntu
+    state: present
+    key: http://paste.openstack.org/raw/osn4Yi7NFIb6PsYpRkT8
+
+- name: update apt
+  apt: update_cache=yes
+
+- name: install deps
+  package:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ pkgs }}"
+
+- name: clone app
+  git:
+    repo: "{{ repo }}"
+    version: "{{ repo_vers }}"
+    dest: "{{ clone_path }}"
+    clone: yes
+    force: yes
+
+- name: install pip dependencies
+  pip:
+    executable: /usr/bin/pip3
+    requirements: "{{ clone_path }}/app/pip_req.txt"
+    state: present
+
+- name: start mysql
+  service:
+    name: mysql
+    state: started
+    enabled: true
+
+- name: update mysql root password
+  mysql_user:
+    name: root
+    password: "{{ mysql_root_password }}"
+    login_unix_socket:  /var/run/mysqld/mysqld.sock
+    check_implicit_admin: yes
+
+- name: create app db
+  mysql_db:
+    name: "{{ dbname }}"
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: add dbuser
+  mysql_user:
+    host: '%'
+    name: "{{ sqluser }}"
+    password: "{{ sqlpassword }}"
+    priv: '*.*:USAGE/{{ dbname }}.*:ALL'
+    state: present
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+
+- name: create systemd service for webapp
+  template:
+    src: webappsvc.j2
+    dest: /etc/systemd/system/webapp.service
+    mode: 755
+
+- name: create env file for webapp.service
+  template:
+    src: envfile.j2
+    dest: /etc/default/webapp.conf
+
+- name: start webapp service
+  service:
+    name: webapp.service
+    state: started
+    enabled: true
+
+
+- name: ensure nginx stopped
+  service:
+    name: nginx
+    state: stopped
+
+- set_fact:
+    dnsname: "{{ hostvars[inventory_hostname].dnsname }}"
+
+- name: generate selfsigned key
+  openssl_privatekey:
+    path: "{{ cert_path }}/{{ dnsname }}.key"
+
+- name: generate csr signed with key
+  openssl_csr:
+    path: "{{ cert_path }}/{{ dnsname }}.csr"
+    privatekey_path: "{{ cert_path }}/{{ dnsname }}.key"
+    common_name: "{{ dnsname }}"
+
+- name: sign the csr
+  openssl_certificate:
+    path: "{{ cert_path }}/{{ dnsname }}.cert"
+    privatekey_path: "{{ cert_path }}/{{ dnsname }}.key"
+    csr_path: "{{ cert_path }}/{{ dnsname }}.csr"
+    provider: selfsigned
+
+- name: place nginx config
+  template:
+    src: webapp.conf.j2
+    dest: /etc/nginx/sites-enabled/webapp.conf
+
+- name: unlink default nginx config
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: start nginx
+  service:
+    name: nginx
+    state: started
+    enabled: true
