@@ -1,8 +1,8 @@
-num_instance: 1
-ami: ami-0039c41a10b230acb
-vpc_subnet: subnet-0262e012f80163191
-region: eu-west-1
-zone: eu-west-1a
-key_name: antons
-group_id: sg-0663513258769e9a5
-private_key: "/home/anton/.ssh/antons.pem"
+num_instance: 1 # ammount of instances to create
+ami: ami-0039c41a10b230acb # ami used - official ubuntu 18.04
+vpc_subnet: vpc subnet
+region: region
+zone: availiability zone
+key_name: your key name
+group_id: some group id in your vpc
+private_key: "path to private key"
