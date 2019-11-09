@@ -1,0 +1,8 @@
+num_instance: 1
+ami: ami-0039c41a10b230acb
+vpc_subnet: subnet-0262e012f80163191
+region: eu-west-1
+zone: eu-west-1a
+key_name: antons
+group_id: sg-0663513258769e9a5
+private_key: "/home/anton/.ssh/antons.pem"
