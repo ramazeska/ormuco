@@ -37,6 +37,7 @@
 ```
 
 * please note: each run will create new instance.
+* in order to login to aws instance - use ubuntu user, ami in playbook is ubuntu-18.04 official image
 
 ### Run app locally
 
